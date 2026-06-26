@@ -1,0 +1,31 @@
+{
+  "name": "temp-port",
+  "version": "1.0.0",
+  "description": "A blazing fast, auto-scanning CLI tool to expose your localhost to the internet instantly with Custom Subdomains and QR Codes.",
+  "main": "temp-port.js",
+  "scripts": {
+    "start": "node temp-port.js"
+  },
+  "keywords": [
+    "localtunnel",
+    "cli",
+    "localhost",
+    "developer-tools",
+    "port-forwarding",
+    "ngrok-alternative",
+    "nodejs",
+    "qrcode"
+  ],
+  "author": "tanbaycu",
+  "license": "MIT",
+  "dependencies": {
+    "boxen": "^5.1.2",
+    "chalk": "^4.1.2",
+    "figlet": "^1.8.0",
+    "gradient-string": "^2.0.2",
+    "inquirer": "^8.2.6",
+    "localtunnel": "^2.0.2",
+    "ora": "^5.4.1",
+    "qrcode-terminal": "^0.12.0"
+  }
+}
