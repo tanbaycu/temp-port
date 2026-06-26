@@ -41,7 +41,9 @@ node temp-port.js
 Sau đó, giao diện tương tác (CLI) sẽ hướng dẫn bạn chọn Port và Subdomain chỉ trong vài giây.
 
 ## 📸 Ảnh chụp màn hình
-*(Bạn hãy chụp ảnh màn hình Terminal lúc đang chạy công cụ và chèn vào đây nhé!)*
+<img width="1247" height="721" alt="image" src="https://github.com/user-attachments/assets/668aa7ee-a91a-4ebe-acec-76690cef496b" />
+<img width="1237" height="867" alt="image" src="https://github.com/user-attachments/assets/b762227f-a4a4-4b0c-88b9-b87b6812eeae" />
+
 
 ## 🛠️ Công nghệ sử dụng
 - [Localtunnel](https://github.com/localtunnel/localtunnel) - Core mở Port.
