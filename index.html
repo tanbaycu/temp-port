@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Temp Port - Đưa Localhost ra toàn cầu chỉ trong 1 giây</title>
+    <meta name="description" content="Giải pháp thay thế ngrok hoàn hảo với Auto-scan, Custom Subdomain, Live Traffic Log và Mã QR thần tốc. Phát triển bởi tanbaycu.">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0d1117;
+            --text-main: #c9d1d9;
+            --text-glow: #ffffff;
+            --primary: #58a6ff;
+            --secondary: #bd56eb;
+            --accent: #2ea043;
+            --glass-bg: rgba(22, 27, 34, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Ambient Glow Background */
+        .ambient-glow {
+            position: fixed;
+            top: -20%; left: -10%;
+            width: 50vw; height: 50vw;
+            background: radial-gradient(circle, rgba(88,166,255,0.15) 0%, rgba(13,17,23,0) 70%);
+            z-index: -1;
+            pointer-events: none;
+        }
+        .ambient-glow-2 {
+            position: fixed;
+            bottom: -20%; right: -10%;
+            width: 50vw; height: 50vw;
+            background: radial-gradient(circle, rgba(189,86,235,0.1) 0%, rgba(13,17,23,0) 70%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header / Navbar */
+        header {
+            padding: 30px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -1px;
+        }
+        .nav-links a {
+            color: var(--text-main);
+            text-decoration: none;
+            margin-left: 20px;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+        .nav-links a:hover { color: var(--text-glow); }
+
+        /* Hero Section */
+        .hero {
+            padding: 100px 0;
+            text-align: center;
+        }
+        .hero h1 {
+            font-size: 4rem;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 20px;
+            color: var(--text-glow);
+        }
+        .hero p {
+            font-size: 1.25rem;
+            max-width: 600px;
+            margin: 0 auto 40px auto;
+            color: #8b949e;
+        }
+        .install-box {
+            display: inline-flex;
+            align-items: center;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            padding: 15px 30px;
+            border-radius: 50px;
+            backdrop-filter: blur(10px);
+            font-family: 'Fira Code', monospace;
+            font-size: 1.1rem;
+            color: var(--primary);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transition: transform 0.3s ease, border-color 0.3s ease;
+            cursor: pointer;
+        }
+        .install-box:hover {
+            transform: translateY(-2px);
+            border-color: var(--primary);
+        }
+        .install-box span { color: var(--text-main); margin-right: 15px; }
+
+        /* Features Section */
+        .features {
+            padding: 80px 0;
+        }
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 50px;
+            color: var(--text-glow);
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        .card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            transition: transform 0.3s ease, background 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            background: rgba(33, 38, 45, 0.8);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+        .card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: var(--text-glow);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .card p {
+            color: #8b949e;
+            font-size: 1.05rem;
+        }
+
+        /* CLI Preview */
+        .cli-preview {
+            margin: 80px auto;
+            max-width: 800px;
+            background: #010409;
+            border-radius: 10px;
+            border: 1px solid #30363d;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+        }
+        .cli-header {
+            background: #161b22;
+            padding: 10px 15px;
+            display: flex;
+            gap: 8px;
+            border-bottom: 1px solid #30363d;
+        }
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+        .dot.red { background: #ff5f56; }
+        .dot.yellow { background: #ffbd2e; }
+        .dot.green { background: #27c93f; }
+        
+        .cli-body {
+            padding: 20px;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            color: #e6edf3;
+            overflow-x: auto;
+        }
+        .c-yellow { color: #e3b341; }
+        .c-green { color: #3fb950; }
+        .c-cyan { color: #58a6ff; }
+        .c-gray { color: #6e7681; }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 40px 0;
+            border-top: 1px solid var(--glass-border);
+            color: #8b949e;
+            margin-top: 50px;
+        }
+        footer a { color: var(--primary); text-decoration: none; font-weight: 600; }
+        footer a:hover { text-decoration: underline; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.5rem; }
+            .hero p { font-size: 1.1rem; }
+            .install-box { font-size: 0.9rem; padding: 12px 20px; }
+            .section-title { font-size: 2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="ambient-glow"></div>
+    <div class="ambient-glow-2"></div>
+
+    <div class="container">
+        <header>
+            <div class="logo">Temp Port</div>
+            <div class="nav-links">
+                <a href="#features">Tính năng</a>
+                <a href="https://github.com/tanbaycu/temp-port" target="_blank">GitHub</a>
+            </div>
+        </header>
+
+        <section class="hero">
+            <h1>Localhost ra Thế giới<br>chỉ trong 1 giây.</h1>
+            <p>Giải pháp thay thế ngrok hoàn hảo. Không cần cài đặt rườm rà. Tích hợp sẵn Auto-Scan, Custom Subdomain, Live Traffic Log và hơn thế nữa.</p>
+            
+            <div class="install-box" onclick="copyInstall()" id="installBtn" title="Click để copy">
+                <span>$</span> npm install -g temp-port
+            </div>
+            <div id="copyMsg" style="margin-top: 15px; color: var(--accent); font-weight: 600; opacity: 0; transition: opacity 0.3s ease;">Đã copy lệnh cài đặt!</div>
+        </section>
+
+        <div class="cli-preview">
+            <div class="cli-header">
+                <div class="dot red"></div>
+                <div class="dot yellow"></div>
+                <div class="dot green"></div>
+            </div>
+            <div class="cli-body">
+                <span class="c-yellow">🌐 Bắt đầu khởi tạo Đường hầm Internet...</span><br>
+                <span class="c-green">✅ Đã tìm thấy các Server đang chạy trên máy bạn!</span><br>
+                <span class="c-gray">? Chọn Port bạn muốn đẩy lên Internet:</span> 🟢 Port 3000<br>
+                <span class="c-gray">? Nhập Subdomain mong muốn:</span> my-awesome-app<br>
+                <span class="c-green">✔ Tunnel đã mở thành công!</span><br>
+                <br>
+                <span class="c-gray">Local:</span>  http://localhost:3000<br>
+                <span class="c-gray">Public:</span> <span class="c-cyan">https://my-awesome-app.loca.lt</span><br>
+                <br>
+                <span class="c-green">✅ Public URL đã được tự động Copy vào Clipboard!</span><br>
+                <br>
+                <span class="c-cyan">📡 Live Traffic Log:</span><br>
+                <span class="c-gray">[10:00:01 AM]</span> <span class="c-green">[GET]</span> /api/users<br>
+                <span class="c-gray">[10:00:05 AM]</span> <span class="c-yellow">[POST]</span> /api/login<br>
+            </div>
+        </div>
+
+        <section id="features" class="features">
+            <h2 class="section-title">Tính năng Đỉnh cao (Peak Features)</h2>
+            <div class="grid">
+                <div class="card">
+                    <h3>🔍 Auto-Scan Thông Minh</h3>
+                    <p>Tự động dò tìm các cổng Developer phổ biến (React, Vite, Node...) đang chạy và đưa ra gợi ý chỉ với 1 nút Enter.</p>
+                </div>
+                <div class="card">
+                    <h3>🏷️ Custom Subdomain</h3>
+                    <p>Tự do chọn tên miền phụ mang thương hiệu riêng. Hỗ trợ cấu hình cả `--host` nếu bạn sở hữu server localtunnel độc lập.</p>
+                </div>
+                <div class="card">
+                    <h3>📱 QR Code Tích Hợp</h3>
+                    <p>Sinh ngay một mã QR trực quan ngay trên Terminal. Dễ dàng dùng điện thoại quét để test giao diện Mobile (Responsive) tức thì.</p>
+                </div>
+                <div class="card">
+                    <h3>📋 Đa Nền Tảng (Cross-Platform)</h3>
+                    <p>Tự động Copy URL public vào clipboard mượt mà trên tất cả hệ điều hành: Windows, macOS và Linux.</p>
+                </div>
+                <div class="card">
+                    <h3>📊 Dashboard & Live Log</h3>
+                    <p>In ra các request HTTP theo thời gian thực. Xuất bảng báo cáo tổng kết chi tiết (Uptime & Số lượng Request) khi kết thúc phiên.</p>
+                </div>
+                <div class="card">
+                    <h3>🛡️ Auto-Reconnect</h3>
+                    <p>Khả năng tự động kết nối lại mạnh mẽ khi rớt mạng hoặc sập tunnel. Không bao giờ lo đứt kết nối giữa chừng.</p>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <p>Phát triển với ❤️ bởi <a href="https://github.com/tanbaycu" target="_blank">tanbaycu</a>. Phiên bản 1.1.0</p>
+        </footer>
+    </div>
+
+    <script>
+        function copyInstall() {
+            navigator.clipboard.writeText('npm install -g temp-port').then(() => {
+                const msg = document.getElementById('copyMsg');
+                msg.style.opacity = 1;
+                setTimeout(() => {
+                    msg.style.opacity = 0;
+                }, 2000);
+            });
+        }
+    </script>
+</body>
+</html>
